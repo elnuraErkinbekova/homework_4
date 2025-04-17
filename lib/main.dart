@@ -19,18 +19,7 @@ class MyApp extends StatelessWidget {
 class FirstScreen extends StatelessWidget {
   const FirstScreen({super.key});
 
-  Widget buildStack() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        coloredBox(Colors.red, '1', 80),
-        coloredBox(Colors.yellow, '2', 103),
-        coloredBox(Colors.green, '3', 125),
-      ],
-    );
-  }
-
-  Widget coloredBox(Color color, String text, double size) {
+  Widget coloredBox(Color color, String text, double size, double fontSize) {
     return Container(
       width: size,
       height: size,
@@ -38,8 +27,19 @@ class FirstScreen extends StatelessWidget {
       color: color,
       child: Text(
         text,
-        style: TextStyle(fontSize: 18, color: Colors.black),
+        style: TextStyle(fontSize: fontSize, color: Colors.black),
       ),
+    );
+  }
+
+  Widget buildStack(double baseSize, double fontSize) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        coloredBox(Colors.red, '1', baseSize, fontSize),
+        coloredBox(Colors.yellow, '2', baseSize * 1.3, fontSize),
+        coloredBox(Colors.green, '3', baseSize * 1.6, fontSize),
+      ],
     );
   }
 
@@ -52,31 +52,39 @@ class FirstScreen extends StatelessWidget {
         backgroundColor: Colors.lightBlue,
         centerTitle: true,
       ),
-      body: Center(
-        child: SizedBox(
-          width: double.infinity,
-          child: Stack(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final screenWidth = constraints.maxWidth;
+          final screenHeight = constraints.maxHeight;
+
+          final horizontalSpacing = screenWidth * 0.04;
+          final verticalSpacing = screenHeight * 0.3;
+
+          final baseSize = screenWidth * 0.18;
+          final fontSize = baseSize * 0.25;
+
+          return Stack(
             children: [
               Positioned(
-                left: 25,
-                top: 30,
-                child: buildStack(),
+                left: horizontalSpacing,
+                top: verticalSpacing * 0.12,
+                child: buildStack(baseSize, fontSize),
               ),
 
               Positioned(
-                left: 150,
-                top: 230,
-                child: buildStack(),
+                left: screenWidth / 2 - (baseSize * 1.4) / 2,
+                top: verticalSpacing,
+                child: buildStack(baseSize, fontSize),
               ),
 
               Positioned(
-                left: 275,
-                top: 430,
-                child: buildStack(),
+                left: screenWidth - horizontalSpacing - baseSize * 1.55,
+                top: verticalSpacing * 1.9,
+                child: buildStack(baseSize, fontSize),
               ),
             ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }
